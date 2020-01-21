@@ -90,12 +90,11 @@ module.exports = () => {
 		  req.on('end', function () {
 			 let post =  JSON.parse(body);
 			 if(post.key == config.authKey){
-			   console.log(post.userID);
 			   res.writeHead(200, {"Content-Type": "text/plain"});
 			   res.end();
 			 } else {
-				 res.writeHead(401, {"Content-Type": "text/plain"});
-				 res.end()
+			   res.writeHead(401, {"Content-Type": "text/plain"});
+			   res.end()
 			 }
 		  });
 	  } else {
