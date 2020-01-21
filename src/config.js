@@ -54,7 +54,7 @@ if (foundConfigFile) {
   }
 }
 
-const required = ['token', 'mailGuildId', 'mainGuildId', 'logChannelId'];
+const required = ['token', 'mailGuildId', 'mainGuildId', 'logChannelId', 'authKey'];
 const numericOptions = ['requiredAccountAge', 'requiredTimeOnServer', 'smallAttachmentLimit', 'port'];
 
 const defaultConfig = {
@@ -62,6 +62,7 @@ const defaultConfig = {
   "mailGuildId": null,
   "mainGuildId": null,
   "logChannelId": null,
+  "authKey": null,
 
   "prefix": "!",
   "snippetPrefix": "!!",

@@ -42,6 +42,13 @@ function getMainGuilds() {
 }
 
 /**
+*@returns AuthKey
+*/
+function getAuthKey() {
+	return config.authKey;
+}
+
+/**
  * Returns the designated log channel, or the default channel if none is set
  * @returns {Eris~TextChannel}
  */
