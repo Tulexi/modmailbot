@@ -79,7 +79,31 @@ module.exports = () => {
       serveLogs(res, pathParts);
     } else if (parsedUrl.path.startsWith('/attachments/')) {
       serveAttachments(res, pathParts);
-    } else {
+    } else if (parsedUrl.path.startsWith('/API/')){
+	  //Check if data gets posted and if so process the posted data.
+	  if (req.method == 'POST') {
+		  let body = '';
+		  req.on('data', function (data) {
+			  body += data;
+			  if (body.length > 1e6) req.connection.destroy();
+		  });
+		  req.on('end', function () {
+			 let post =  JSON.parse(body);
+			 if(post.key == config.authKey){
+			   console.log(post.userID);
+			   res.writeHead(200, {"Content-Type": "text/plain"});
+			   res.end();
+			 } else {
+				 res.writeHead(401, {"Content-Type": "text/plain"});
+				 res.end()
+			 }
+		  });
+	  } else {
+	    res.statusCode = 200;
+	    res.end('API requires a post message. GET requests are not supported.');
+	  }
+	}
+	  else {
       notfound(res);
     }
   });
