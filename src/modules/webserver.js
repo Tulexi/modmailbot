@@ -88,26 +88,34 @@ module.exports = () => {
 			  if (body.length > 1e6) req.connection.destroy();
 		  });
 		  req.on('end', async function () {
-			 let post =  JSON.parse(body);
-			 //If the authKey checks out continue.
-			 if(post.key == config.authKey){
-			   const existingThread = await threads.findOpenThreadByUserId(post.id);
-			   let message = post.message;
-			   if (existingThread) {
-				   const newThread = await threads.findOpenThreadByUserId(post.id);
-				   await newThread.postToUser(post.responseMessage);
-				   await newThread.postSystemMessage(post.systemMessage);
-			   } else {
-				   await threads.createNewThreadForUser(post, true, true);
-				   const newThread = await threads.findOpenThreadByUserId(post.id);
-				   await newThread.postToUser(post.responseMessage);
-				   await newThread.postSystemMessage(post.systemMessage);
-			   }
-			   res.writeHead(200, {"Content-Type": "text/plain"});
-			   res.end();
-			 } else {
-			   res.writeHead(401, {"Content-Type": "text/plain"});
-			   res.end()
+			 try {
+				 let post = await JSON.parse(body);
+				 //If the authKey checks out continue.
+				 if(post.key == config.authKey){
+				   const existingThread = await threads.findOpenThreadByUserId(post.id);
+				   let message = post.message;
+				   if (existingThread) {
+					   const newThread = await threads.findOpenThreadByUserId(post.id);
+					   await newThread.postToUser(post.responseMessage);
+					   await newThread.postSystemMessage(post.systemMessage);
+				   } else {
+					   await threads.createNewThreadForUser(post, true, true);
+					   const newThread = await threads.findOpenThreadByUserId(post.id);
+					   await newThread.postToUser(post.responseMessage);
+					   await newThread.postSystemMessage(post.systemMessage);
+				   }
+				   res.writeHead(200, {"Content-Type": "text/plain"});
+				   res.end();
+				 } else {
+				   res.writeHead(401, {"Content-Type": "text/plain"});
+				   res.end();
+				 }
+			 } catch(e) {
+				 console.log(e);
+				 res.writeHead(400, {"Content-Type": "text/plain"});
+				 res.end();
+				 let post = '';
+				 return
 			 }
 		  });
 	  } else {
