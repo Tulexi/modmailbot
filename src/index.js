@@ -12,7 +12,7 @@ const path = require('path');
 try {
   fs.accessSync(path.join(__dirname, '..', 'node_modules'));
 } catch (e) {
-  console.error('Please run "npm install" before starting the bot');
+  console.error('Please run "npm ci" before starting the bot');
   process.exit(1);
 }
 
@@ -37,7 +37,7 @@ try {
     fs.accessSync(path.join(__dirname, '..', 'node_modules', mod))
   });
 } catch (e) {
-  console.error(`Please run "npm install" again! Package "${testedPackage}" is missing.`);
+  console.error(`Please run "npm ci" again! Package "${testedPackage}" is missing.`);
   process.exit(1);
 }
 
@@ -61,7 +61,12 @@ process.on('unhandledRejection', err => {
 
 (async function() {
   // Make sure the database is up to date
-  await knex.migrate.latest();
+  const [completed, newMigrations] = await knex.migrate.list();
+  if (newMigrations.length > 0) {
+    console.log('Updating database. This can take a while. Don\'t close the bot!');
+    await knex.migrate.latest();
+    console.log('Done!');
+  }
 
   // Migrate legacy data if we need to
   if (await legacyMigrator.shouldMigrate()) {
